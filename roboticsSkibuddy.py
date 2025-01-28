@@ -1,4 +1,5 @@
 import pygame
+import math
 
 pygame.init()
 
@@ -14,6 +15,7 @@ prevscrn = 1
 curscrn = 1
 scrnChange = True
 darkgray = (51, 51, 51)
+mouseup = False
 
 #Making a button class so it is easy to make multiple buttons
 class Button:
@@ -36,6 +38,14 @@ class Button:
 def fNum(x, num):
     return int(round(x * (num / 100)))
 
+def draw_rect(surface, color, x, y, width, height, borderwidth = 0):
+    rect = pygame.Rect(0, 0, width, height)
+    rect.center = (x, y)
+    if borderwidth == 0:
+        pygame.draw.rect(surface, color, rect)
+    else:
+        pygame.draw.rect(surface, color, rect, borderwidth)
+
 def homeScreen(screen):
     global Buttons, darkgray
     screen.fill((0,0,0))
@@ -45,9 +55,13 @@ def homeScreen(screen):
         Button(fNum(width, 34), fNum(height, 50), fNum(width, 10), fNum(width, 10), darkgray, "white", 1, "Quit", fNum(width, 3), fNum(width, 3))
     ]
 
+def fieldScreen(screen):
+    global darkgray
+    screen.fill((255,255,255))
+    draw_rect(screen,(31,31,31), fNum(width, 50), fNum(height, 50),fNum(width, 99),fNum(width, 99) // 2.25, int(math.ceil((width + height) *.00277)))
+
 while run:
     width, height = screen.get_size()
-    print(width, height)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -55,6 +69,8 @@ while run:
 
     if curscrn == 1:
         homeScreen(screen)
+    elif curscrn == 2:
+        fieldScreen(screen)
 
     for butt in Buttons:
         if butt.scrnID == curscrn:
@@ -65,13 +81,24 @@ while run:
                 butt.color = darkgray
         
             butt.draw(screen)
+            if mouseup == False:
+                
+                if event.type == pygame.MOUSEBUTTONUP and butt.rect.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1, 1))):
+                    if butt.text == "Start Play":
+                        curscrn = 2
+            
 
     if prevscrn != curscrn:
         scrnChange = True
+        print("change")
     else:
         scrnChange = False
 
     #Button Handling
+    mouseup = False
+
+    prevscrn = curscrn
+    
 
     clock.tick(60)
 
