@@ -16,6 +16,7 @@ curscrn = 1
 scrnChange = True
 darkgray = (51, 51, 51)
 mouseup = False
+openWin = False
 
 #Making a button class so it is easy to make multiple buttons
 class Button:
@@ -56,12 +57,26 @@ def homeScreen(screen):
     ]
 
 def fieldScreen(screen):
-    global darkgray
+    global darkgray, Buttons
     screen.fill((255,255,255))
     draw_rect(screen,(31,31,31), fNum(width, 50), fNum(height, 50),fNum(width, 99),fNum(width, 99) // 2.25, int(math.ceil((width + height) *.00277)))
+    Buttons = [
+        Button(fNum(width, 7), fNum(height, 95.9), fNum(width, 10), fNum(width, 4), darkgray, "white", 2, "Game Element", fNum(width, 1), fNum(width, 2)),
+        Button(fNum(width, 7), fNum(height, 4.1), fNum(width, 10), fNum(width, 4), darkgray, "white", 2, "Quit", fNum(width, 1), fNum(width, 2))
+    ]
+
+def openWin(screen):
+    screen.blit(window, (fNum(width, -5), height // 1.7))
+    pygame.draw.circle(screen, (0, 220, 180), (fNum(width, 3), fNum(height, 75)), fNum(width, 2))
+    pygame.draw.circle(screen, (0, 0, 0), (fNum(width, 3), fNum(height, 75)), fNum(width, 2), fNum(width, .25))
+
+    pygame.draw.circle(screen, (241, 241, 241), (int(width * .14), int(height * .75)), int(width * .015))
+    pygame.draw.circle(screen, (190, 190, 190), (int(width * .14), int(height * .75)), int(width * .01))
 
 while run:
     width, height = screen.get_size()
+    window = pygame.transform.scale(pygame.image.load("window.png").convert_alpha(), (fNum(width, 23), fNum(height, 40)))
+    
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -86,6 +101,10 @@ while run:
                 if event.type == pygame.MOUSEBUTTONUP and butt.rect.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1, 1))):
                     if butt.text == "Start Play":
                         curscrn = 2
+                    if butt.text == "Quit":
+                        run = False
+                    if butt.text == "Game Element":
+                        openWin = True
             
 
     if prevscrn != curscrn:
@@ -94,8 +113,12 @@ while run:
     else:
         scrnChange = False
 
+    if openWin:
+        openWin(screen)
+
     #Button Handling
     mouseup = False
+    
 
     prevscrn = curscrn
     
