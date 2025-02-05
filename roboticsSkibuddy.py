@@ -42,6 +42,7 @@ class Button:
 class gamePieces:
     def __init__(self, typeOfPiece, x, y):
         self.type = typeOfPiece
+        self.hit = pygame.Rect(0, 0 , 1, 1)
         self.x = x
         self.y = y
 
@@ -117,7 +118,21 @@ while run:
     if prevscrn != curscrn:
         scrnChange = True
         if curscrn == 2:
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90), fNum(fieldLimit.height, 50)))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top))
+
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top))
+            
+            
         print("change")
     else:
         scrnChange = False
@@ -129,6 +144,8 @@ while run:
                 mouseup = True
             else:
                 butt.color = darkgray
+
+            prevscrn = curscrn
         
             butt.draw(screen)
             if mouseup:
@@ -182,10 +199,6 @@ while run:
     if not pygame.mouse.get_pressed()[0]:
             follow = False
             followPiece = None
-
-
-
-    prevscrn = curscrn
 
     
 
