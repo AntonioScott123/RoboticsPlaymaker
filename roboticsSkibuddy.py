@@ -1,3 +1,9 @@
+try:
+    import pygame_sdl2
+    pygame_sdl2.import_as_pygame()
+except ImportError:
+    pass
+
 import pygame
 import math
 
@@ -21,6 +27,9 @@ openWind = False
 followPiece = None
 follow = False
 fieldLimit = None
+redPAm = 0
+bluePAm = 0
+fieldLimit = pygame.Rect(0,0,0,0)
 
 #Making a button class so it is easy to make multiple buttons
 class Button:
@@ -40,11 +49,12 @@ class Button:
         screen.blit(self.text_surface, self.text_rect)
 
 class gamePieces:
-    def __init__(self, typeOfPiece, x, y):
+    def __init__(self, typeOfPiece, x, y, all):
         self.type = typeOfPiece
         self.hit = pygame.Rect(0, 0 , 1, 1)
         self.x = x
         self.y = y
+        self.all = all
 
     def followMouse(self, xBool, yBool):
         if xBool:
@@ -54,14 +64,19 @@ class gamePieces:
 
     def draw(self,screen):
         if self.type == "coral":
-            self.hit = pygame.Rect(self.x - fNum(w, 1.5), self.y - fNum(w, 1.5), fNum(w, 3), fNum(w, 3))
-            pygame.draw.circle(screen, (241, 241, 241), (self.x, self.y), fNum(w, 1.5))
-            pygame.draw.circle(screen, (190, 190, 190), (self.x, self.y), fNum(w, 1))
+            self.hit = pygame.Rect(self.x - fNum(w, 1), self.y - fNum(w, 1), fNum(w, 2), fNum(w, 2))
+            pygame.draw.circle(screen, (241, 241, 241), (self.x, self.y), fNum(w, 1))
+            pygame.draw.circle(screen, (190, 190, 190), (self.x, self.y), fNum(w, .667))
 
         elif self.type == "algae":
-            self.hit = pygame.Rect(self.x - fNum(w, 2), self.y - fNum(w, 2), fNum(w, 4), fNum(w, 4))
-            pygame.draw.circle(screen, (0, 220, 180), (self.x, self.y), fNum(w, 2))
-            pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y), fNum(w, 2), fNum(w, .25))
+            self.hit = pygame.Rect(self.x - fNum(w, 1.5), self.y - fNum(w, 1.5), fNum(w, 3), fNum(w, 3))
+            if self.all == "r":
+                pygame.draw.circle(screen, (255, 8, 8), (self.x, self.y), fNum(w, 1.5))
+                pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y), fNum(w, 1.5), fNum(w, .25))
+            else:
+                pygame.draw.circle(screen, (8, 102, 255), (self.x, self.y), fNum(w, 1.5))
+                pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y), fNum(w, 1.5), fNum(w, .25))
+
 
 #fnum so i can format and round the number so i can draw something on the screen where i want it
 def fNum(x, num):
@@ -77,13 +92,16 @@ def homeScreen(screen):
     ]
 
 def fieldScreen(screen, win):
-    global darkgray, Buttons, fieldLimit
+    global darkgray, Buttons, fieldLimit, redPRect, bluePRect
     screen.fill((255,255,255))
-    fieldLimit = pygame.Rect(0,0,fNum(w, 99),fNum(w, 99) // 2.25)
+    fieldLimit = pygame.Rect(0,0,fNum(w, 90),fNum(w, 90) // 2.25)
     fieldLimit.center = (fNum(w, 50), fNum(h, 50))
     pygame.draw.rect(screen, (31,31,31), fieldLimit, int(math.ceil((w + h) *.00277)))
     pygame.draw.line(screen,(31,31,31), (fNum(w, 45), fieldLimit.top), (fNum(w, 45), fieldLimit.bottom), int(math.ceil((w + h) *.00277)))
     pygame.draw.line(screen,(31,31,31), (fNum(w, 55), fieldLimit.top), (fNum(w, 55), fieldLimit.bottom), int(math.ceil((w + h) *.00277)))
+    screen.blit(redP, (fNum(w, 35.5), fieldLimit.bottom -3))
+    screen.blit(blueP, (int(fNum(w, 64.5) - 3 - blueP.get_width()), int(fieldLimit.top + 3 - blueP.get_height())))
+#Did you know that Michael Dylan Cariaga was here
     Buttons = [
         Button(fNum(w, 9), fNum(h, 95.9), fNum(w, 12), fNum(w, 4), darkgray, "white", 2, "Game Element", fNum(w, 1), fNum(w, 2)),
         Button(fNum(w, 7), fNum(h, 4.1), fNum(w, 10), fNum(w, 4), darkgray, "white", 2, "Quit", fNum(w, 1), fNum(w, 2))
@@ -100,9 +118,28 @@ def openWin(screen):
     pygame.draw.circle(screen, (241, 241, 241), (fNum(w, 14), fNum(h, 75)), fNum(w, 1.5))
     pygame.draw.circle(screen, (190, 190, 190), (fNum(w, 14), fNum(h, 75)), fNum(w, 1))
 
+#|||||||||||||||
+#VVVVVVVVVVVVVVV
+#START GAME LOOP
+#^^^^^^^^^^^^^^^
+#|||||||||||||||
+
 while run:
     w, h = screen.get_size()
+    prevW, prevH = w, h
     window = pygame.transform.scale(pygame.image.load("window.png").convert_alpha(), (fNum(w, 23), fNum(h, 40)))
+    redP = pygame.transform.scale(pygame.image.load("redP.png").convert_alpha(), (fNum(w, 11), fNum(fNum(w, 11), 50)))
+    blueP = pygame.transform.scale(pygame.image.load("blueP.png").convert_alpha(), (fNum(w, 11), fNum(fNum(w, 11), 50)))
+    redPRect = redP.get_rect()
+    redPRect = pygame.Rect(0, 0, redP.get_width() * 0.8, redP.get_height() * 0.8)
+    redPRect.center = (fNum(w, 35.5) + redP.get_width() // 2, fieldLimit.bottom - 3 + redP.get_height() // 2)
+
+    bluePRect = blueP.get_rect()
+    bluePRect = pygame.Rect(0, 0, blueP.get_width() * 0.8, blueP.get_height() * 0.8)
+    bluePRect.center = (int(fNum(w, 64.5) - 3 - blueP.get_width() // 2), int(fieldLimit.top + 3 - blueP.get_height() // 2))
+
+
+
     
 
     for event in pygame.event.get():
@@ -118,22 +155,23 @@ while run:
     if prevscrn != curscrn:
         scrnChange = True
         if curscrn == 2:
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top))
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top))
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top))
-            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top))
-            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top))
-            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "r"))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "r"))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top, "r"))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "r"))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "r"))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top, "r"))
 
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top))
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top))
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top))
-            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top))
-            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top))
-            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "b"))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "b"))
+            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top, "b"))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "b"))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "b"))
+            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top, "b"))
             
             
         print("change")
+        screen = pygame.display.set_mode((w, h))
     else:
         scrnChange = False
 
@@ -144,9 +182,11 @@ while run:
                 mouseup = True
             else:
                 butt.color = darkgray
+            
 
             prevscrn = curscrn
-        
+                    
+
             butt.draw(screen)
             if mouseup:
                 if not pygame.mouse.get_pressed()[0]:
@@ -159,14 +199,11 @@ while run:
                         elif butt.text == "Game Element":
                             openWind = True
                         elif butt.text == "A":
-                            Pieces.append(gamePieces("algae", fNum(w, 50), fNum(h, 50)))
+                            Pieces.append(gamePieces("algae", fNum(w, 50), fNum(h, 50), "r"))
                         elif butt.text == "C":
-                            Pieces.append(gamePieces("coral", fNum(w, 50), fNum(h, 50)))
+                            Pieces.append(gamePieces("coral", fNum(w, 50), fNum(h, 50), "r"))
                         mouseup = False
-        
-
-    if openWind:
-        openWin(screen)
+                        
 
     for piece in Pieces:
         Pieces[len(Pieces) - (Pieces.index(piece) + 1)].draw(screen)
@@ -186,23 +223,46 @@ while run:
         elif pygame.mouse.get_pos()[1] > fieldLimit.bottom:
             followPiece.y = fieldLimit.bottom
             yFollow = False
-        if pygame.mouse.get_pos()[0] < fieldLimit.left:
-            followPiece.x = fieldLimit.left
-            xFollow = False
-        if pygame.mouse.get_pos()[0] > fieldLimit.right:
-            followPiece.x = fieldLimit.right
-            xFollow = False
+        if followPiece.all == "r":
+            if pygame.mouse.get_pos()[0] < fieldLimit.left + fNum(fieldLimit.width, 45):
+                followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 45)
+                xFollow = False
+        else:#diego needs to code already
+            if pygame.mouse.get_pos()[0] < fieldLimit.left:
+                followPiece.x = fieldLimit.left
+                xFollow = False
+        if followPiece.all == "b":
+            if pygame.mouse.get_pos()[0] > fieldLimit.right - fNum(fieldLimit.width, 45):
+                followPiece.x = fieldLimit.right - fNum(fieldLimit.width, 45)
+                xFollow = False
+        else:
+            if pygame.mouse.get_pos()[0] > fieldLimit.right:
+                followPiece.x = fieldLimit.right
+                xFollow = False
 
         followPiece.followMouse(xFollow, yFollow)
 
-    
-    if not pygame.mouse.get_pressed()[0]:
-            follow = False
-            followPiece = None
+    if followPiece != None:
+        if not pygame.mouse.get_pressed()[0]:
+                if redPRect.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "r":
+                    followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 35.5)
+                    followPiece.y = fieldLimit.bottom + fNum(followPiece.hit.height, 125)
+                elif bluePRect.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "b":
+                    followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 64.5)
+                    followPiece.y = fieldLimit.top - fNum(followPiece.hit.height, 125)
+
+                
+                follow = False
+                followPiece = None
 
     
+    if openWind:
+        openWin(screen)
+
+    pygame.draw.rect(screen, (0,0,0), redPRect)
 
     clock.tick(60)
+            
 
     pygame.display.flip()
 pygame.quit()
