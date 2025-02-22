@@ -6,6 +6,7 @@ except ImportError:
 
 import pygame
 import math
+import random
 
 pygame.init()
 
@@ -101,6 +102,8 @@ def fieldScreen(screen, win):
     pygame.draw.line(screen,(31,31,31), (fNum(w, 55), fieldLimit.top), (fNum(w, 55), fieldLimit.bottom), int(math.ceil((w + h) *.00277)))
     screen.blit(redP, (fNum(w, 35.5), fieldLimit.bottom -3))
     screen.blit(blueP, (int(fNum(w, 64.5) - 3 - blueP.get_width()), int(fieldLimit.top + 3 - blueP.get_height())))
+    screen.blit(redR, (fNum(fieldLimit.width, 70) + fieldLimit.left - fNum(redR.get_width(), 50), fNum(fieldLimit.height, 50) + fieldLimit.top - fNum(redR.get_height(), 50)))
+    screen.blit(blueR, (fNum(fieldLimit.width, 30) + fieldLimit.left - fNum(redR.get_width(), 50), fNum(fieldLimit.height, 50) + fieldLimit.top - fNum(redR.get_height(), 50)))
 #Did you know that Michael Dylan Cariaga was here
     Buttons = [
         Button(fNum(w, 9), fNum(h, 95.9), fNum(w, 12), fNum(w, 4), darkgray, "white", 2, "Game Element", fNum(w, 1), fNum(w, 2)),
@@ -130,17 +133,16 @@ while run:
     window = pygame.transform.scale(pygame.image.load("window.png").convert_alpha(), (fNum(w, 23), fNum(h, 40)))
     redP = pygame.transform.scale(pygame.image.load("redP.png").convert_alpha(), (fNum(w, 11), fNum(fNum(w, 11), 50)))
     blueP = pygame.transform.scale(pygame.image.load("blueP.png").convert_alpha(), (fNum(w, 11), fNum(fNum(w, 11), 50)))
-    redPRect = redP.get_rect()
-    redPRect = pygame.Rect(0, 0, redP.get_width() * 0.8, redP.get_height() * 0.8)
+    redR = pygame.transform.scale(pygame.image.load("redR.png").convert_alpha(), (fNum(fNum(w, 15), 87), fNum(w, 15)))
+    blueR = pygame.transform.scale(pygame.image.load("blueR.png").convert_alpha(), (fNum(fNum(w, 15), 87), fNum(w, 15)))
+    redPBig = redP.get_rect()
+    redPBig.topleft = (fNum(w, 35.5), fieldLimit.bottom - 3)
+    bluePBig = blueP.get_rect()
+    bluePBig.topleft = (fNum(w, 64.5) - blueP.get_width(), fieldLimit.top + 3 - blueP.get_height())
+    redPRect = pygame.Rect(0, 0, redP.get_width() * 0.6, redP.get_height() * 0.6)
     redPRect.center = (fNum(w, 35.5) + redP.get_width() // 2, fieldLimit.bottom - 3 + redP.get_height() // 2)
-
-    bluePRect = blueP.get_rect()
-    bluePRect = pygame.Rect(0, 0, blueP.get_width() * 0.8, blueP.get_height() * 0.8)
-    bluePRect.center = (int(fNum(w, 64.5) - 3 - blueP.get_width() // 2), int(fieldLimit.top + 3 - blueP.get_height() // 2))
-
-
-
-    
+    bluePRect = pygame.Rect(0, 0, blueP.get_width() * 0.6, blueP.get_height() * 0.6)
+    bluePRect.center = (fNum(w, 35.5) + blueP.get_width() // 2, fieldLimit.bottom - 3 + blueP.get_height() // 2)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -227,11 +229,11 @@ while run:
             if pygame.mouse.get_pos()[0] < fieldLimit.left + fNum(fieldLimit.width, 45):
                 followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 45)
                 xFollow = False
-        else:#diego needs to code already
+        else:
             if pygame.mouse.get_pos()[0] < fieldLimit.left:
                 followPiece.x = fieldLimit.left
                 xFollow = False
-        if followPiece.all == "b":
+        if followPiece.all == "b": 
             if pygame.mouse.get_pos()[0] > fieldLimit.right - fNum(fieldLimit.width, 45):
                 followPiece.x = fieldLimit.right - fNum(fieldLimit.width, 45)
                 xFollow = False
@@ -244,10 +246,10 @@ while run:
 
     if followPiece != None:
         if not pygame.mouse.get_pressed()[0]:
-                if redPRect.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "r":
+                if redPBig.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "r":
                     followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 35.5)
                     followPiece.y = fieldLimit.bottom + fNum(followPiece.hit.height, 125)
-                elif bluePRect.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "b":
+                elif bluePBig.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "b":
                     followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 64.5)
                     followPiece.y = fieldLimit.top - fNum(followPiece.hit.height, 125)
 
@@ -258,8 +260,6 @@ while run:
     
     if openWind:
         openWin(screen)
-
-    pygame.draw.rect(screen, (0,0,0), redPRect)
 
     clock.tick(60)
             
