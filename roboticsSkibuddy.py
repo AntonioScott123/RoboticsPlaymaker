@@ -106,8 +106,10 @@ def fieldScreen(screen, win):
     screen.blit(blueR, (fNum(fieldLimit.width, 30) + fieldLimit.left - fNum(redR.get_width(), 50), fNum(fieldLimit.height, 50) + fieldLimit.top - fNum(redR.get_height(), 50)))
 #Did you know that Michael Dylan Cariaga was here
     Buttons = [
-        Button(fNum(w, 9), fNum(h, 95.9), fNum(w, 12), fNum(w, 4), darkgray, "white", 2, "Game Element", fNum(w, 1), fNum(w, 2)),
-        Button(fNum(w, 7), fNum(h, 4.1), fNum(w, 10), fNum(w, 4), darkgray, "white", 2, "Quit", fNum(w, 1), fNum(w, 2))
+        Button(fNum(w, 9), fNum(h, 95), fNum(w, 12), fNum(w, 4), darkgray, "white", 2, "Game Element", fNum(w, 1), fNum(w, 2)),
+        Button(fNum(w, 7), fNum(h, 5), fNum(w, 10), fNum(w, 4), darkgray, "white", 2, "Quit", fNum(w, 1), fNum(w, 2)),
+        #Button(fNum(w, 50), fNum(h, 95), fNum(w, 6), fNum(w, 4), (255, 102, 102), "white", 2, "Processor: " + str(redPAm), fNum(w, 1), fNum(w, 2)),
+        Button(fNum(w, 50), fNum(h, 5), fNum(w, 6), fNum(w, 4), (173, 216, 230), "white", 2, "Processor: " + str(bluePAm), fNum(w, 1), fNum(w, 2))
     ]
     if win:
         Buttons.append(Button(fNum(w, 6), fNum(h, 75), fNum(w, 6), fNum(h, 8), darkgray, "white", 2, "A", fNum(w, 1), fNum(h, 4)))
@@ -140,9 +142,11 @@ while run:
     bluePBig = blueP.get_rect()
     bluePBig.topleft = (fNum(w, 64.5) - blueP.get_width(), fieldLimit.top + 3 - blueP.get_height())
     redPRect = pygame.Rect(0, 0, redP.get_width() * 0.6, redP.get_height() * 0.6)
-    redPRect.center = (fNum(w, 35.5) + redP.get_width() // 2, fieldLimit.bottom - 3 + redP.get_height() // 2)
+    redPRect.centerx = fNum(w, 35.5) + redP.get_width() // 2
+    redPRect.top = fieldLimit.bottom - 3 + redP.get_height() // 2
     bluePRect = pygame.Rect(0, 0, blueP.get_width() * 0.6, blueP.get_height() * 0.6)
-    bluePRect.center = (fNum(w, 35.5) + blueP.get_width() // 2, fieldLimit.bottom - 3 + blueP.get_height() // 2)
+    bluePRect.centerx = fNum(w, 64.5)  - blueP.get_width() // 2
+    bluePRect.bottom = fieldLimit.top + 3 - blueP.get_height() // 2
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -157,12 +161,12 @@ while run:
     if prevscrn != curscrn:
         scrnChange = True
         if curscrn == 2:
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "r"))
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "r"))
-            Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top, "r"))
-            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "r"))
-            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "r"))
-            Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top, "r"))
+            #Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "r"))
+            #Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "r"))
+            #Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top, "r"))
+            #Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "r"))
+            #Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "r"))
+            #Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 90) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top, "r"))
 
             Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "b"))
             Pieces.append(gamePieces("algae", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "b"))
@@ -180,10 +184,11 @@ while run:
     for butt in Buttons:
         if butt.scrnID == curscrn:
             if pygame.mouse.get_pressed()[0] and butt.rect.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1, 1))):
-                butt.color = (81,81,81)
+                if butt.text != "Processor: ":
+                    butt.color = (81,81,81)
                 mouseup = True
             else:
-                butt.color = darkgray
+                butt.color = butt.color
             
 
             prevscrn = curscrn
@@ -201,18 +206,24 @@ while run:
                         elif butt.text == "Game Element":
                             openWind = True
                         elif butt.text == "A":
-                            Pieces.append(gamePieces("algae", fNum(w, 50), fNum(h, 50), "r"))
+                            Pieces.append(gamePieces("algae", fNum(w, 50), fNum(h, 50), "b"))
                         elif butt.text == "C":
-                            Pieces.append(gamePieces("coral", fNum(w, 50), fNum(h, 50), "r"))
+                            Pieces.append(gamePieces("coral", fNum(w, 50), fNum(h, 50), "b"))
                         mouseup = False
                         
-
+    redPAm = 0
+    bluePAm = 0
     for piece in Pieces:
         Pieces[len(Pieces) - (Pieces.index(piece) + 1)].draw(screen)
         if not follow:
             if piece.hit.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1, 1))) and pygame.mouse.get_pressed()[0]:
                 followPiece = piece
                 follow = True
+        if piece.hit.colliderect(redPRect):
+            redPAm += 1
+        elif piece.hit.colliderect(bluePRect):
+            bluePAm += 1
+
     
     if follow:
         Pieces.remove(followPiece)
@@ -246,16 +257,26 @@ while run:
 
     if followPiece != None:
         if not pygame.mouse.get_pressed()[0]:
-                if redPBig.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "r":
-                    followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 35.5)
-                    followPiece.y = fieldLimit.bottom + fNum(followPiece.hit.height, 125)
-                elif bluePBig.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "b":
-                    followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 64.5)
-                    followPiece.y = fieldLimit.top - fNum(followPiece.hit.height, 125)
-
+                if (redPBig.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "r") and redPAm < 2:
+                    if redPAm == 0:
+                        followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 36.5)
+                        followPiece.y = fieldLimit.bottom + fNum(followPiece.hit.height, 125)
+                    else:
+                        followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 42.5)
+                        followPiece.y = fieldLimit.bottom + fNum(followPiece.hit.height, 125)
+                elif (bluePBig.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1,1))) and followPiece.type == "algae" and followPiece.all == "b") and bluePAm < 2:
+                    if bluePAm == 0:
+                        followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 63.5)
+                        followPiece.y = fieldLimit.top - fNum(followPiece.hit.height, 125)
+                    else:
+                        followPiece.x = fieldLimit.left + fNum(fieldLimit.width, 56.5)
+                        followPiece.y = fieldLimit.top - fNum(followPiece.hit.height, 125)
                 
                 follow = False
                 followPiece = None
+
+
+
 
     
     if openWind:
