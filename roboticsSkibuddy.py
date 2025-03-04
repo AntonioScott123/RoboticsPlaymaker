@@ -70,13 +70,13 @@ class gamePieces:
             pygame.draw.circle(screen, (190, 190, 190), (self.x, self.y), fNum(w, .667))
 
         elif self.type == "algae":
-            self.hit = pygame.Rect(self.x - fNum(w, 1.5), self.y - fNum(w, 1.5), fNum(w, 3), fNum(w, 3))
+            self.hit = pygame.Rect(self.x - fNum(w, 1.5), self.y - fNum(w, 1.5), fNum(w, 2.5), fNum(w, 2.5))
             if self.all == "r":
-                pygame.draw.circle(screen, (255, 8, 8), (self.x, self.y), fNum(w, 1.5))
-                pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y), fNum(w, 1.5), fNum(w, .25))
+                pygame.draw.circle(screen, (255, 8, 8), (self.x, self.y), fNum(w, 1.25))
+                pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y), fNum(w, 1.25), fNum(w, .25))
             else:
-                pygame.draw.circle(screen, (8, 102, 255), (self.x, self.y), fNum(w, 1.5))
-                pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y), fNum(w, 1.5), fNum(w, .25))
+                pygame.draw.circle(screen, (8, 102, 255), (self.x, self.y), fNum(w, 1.25))
+                pygame.draw.circle(screen, (0, 0, 0), (self.x, self.y), fNum(w, 1.25), fNum(w, .25))
 
 
 #fnum so i can format and round the number so i can draw something on the screen where i want it
@@ -136,6 +136,14 @@ while run:
     redP = pygame.transform.scale(pygame.image.load("redP.png").convert_alpha(), (fNum(w, 11), fNum(fNum(w, 11), 50)))
     blueP = pygame.transform.scale(pygame.image.load("blueP.png").convert_alpha(), (fNum(w, 11), fNum(fNum(w, 11), 50)))
     redR = pygame.transform.scale(pygame.image.load("redR.png").convert_alpha(), (fNum(fNum(w, 15), 87), fNum(w, 15)))
+
+    redRR1 = pygame.Rect(fNum(fieldLimit.width, 29.7) + fieldLimit.left, fNum(h, 55.5) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4))
+    redRR2 = pygame.Rect(fNum(fieldLimit.width, 33.4), fNum(h, 55.5), fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4))
+    redRR3 = pygame.Rect(fNum(fieldLimit.width, 36), fNum(h, 55), fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4))
+    #redRR1
+    #redRR1
+    #redRR1
+
     blueR = pygame.transform.scale(pygame.image.load("blueR.png").convert_alpha(), (fNum(fNum(w, 15), 87), fNum(w, 15)))
     redPBig = redP.get_rect()
     redPBig.topleft = (fNum(w, 35.5), fieldLimit.bottom - 3)
@@ -190,9 +198,7 @@ while run:
             else:
                 butt.color = butt.color
             
-
             prevscrn = curscrn
-                    
 
             butt.draw(screen)
             if mouseup:
@@ -223,6 +229,8 @@ while run:
             redPAm += 1
         elif piece.hit.colliderect(bluePRect):
             bluePAm += 1
+        if piece == followPiece:
+            print(piece.hit.x / w, piece.hit.y / h)
 
     
     if follow:
@@ -278,7 +286,10 @@ while run:
 
 
 
-    
+    pygame.draw.rect(screen, (0,0,0), redRR1)
+    pygame.draw.rect(screen, (0,0,0), redRR2)
+    pygame.draw.rect(screen, (0,0,0), redRR3)
+
     if openWind:
         openWin(screen)
 
