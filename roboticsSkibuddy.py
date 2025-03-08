@@ -136,14 +136,6 @@ while run:
     redP = pygame.transform.scale(pygame.image.load("redP.png").convert_alpha(), (fNum(w, 11), fNum(fNum(w, 11), 50)))
     blueP = pygame.transform.scale(pygame.image.load("blueP.png").convert_alpha(), (fNum(w, 11), fNum(fNum(w, 11), 50)))
     redR = pygame.transform.scale(pygame.image.load("redR.png").convert_alpha(), (fNum(fNum(w, 15), 87), fNum(w, 15)))
-    algaeHitBox = [
-        pygame.Rect(fNum(fieldLimit.width, 27.6) + fieldLimit.left, fNum(fieldLimit.height, 57.3) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
-        pygame.Rect(fNum(fieldLimit.width, 31.8) + fieldLimit.left, fNum(fieldLimit.height, 57.3) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
-        pygame.Rect(fNum(fieldLimit.width, 33.8) + fieldLimit.left, fNum(fieldLimit.height, 49.5) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
-        pygame.Rect(fNum(fieldLimit.width, 25.6) + fieldLimit.left, fNum(fieldLimit.height, 49.5) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
-        pygame.Rect(fNum(fieldLimit.width, 31.7) + fieldLimit.left, fNum(fieldLimit.height, 41.7) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
-        pygame.Rect(fNum(fieldLimit.width, 27.5) + fieldLimit.left, fNum(fieldLimit.height, 41.7) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4))
-    ]
 
     blueR = pygame.transform.scale(pygame.image.load("blueR.png").convert_alpha(), (fNum(fNum(w, 15), 87), fNum(w, 15)))
     redPBig = redP.get_rect()
@@ -165,6 +157,15 @@ while run:
         homeScreen(screen)
     elif curscrn == 2:
         fieldScreen(screen, openWind)
+        algaeHitBox = [
+        pygame.Rect(fNum(fieldLimit.width, 27.6) + fieldLimit.left, fNum(fieldLimit.height, 57.3) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
+        pygame.Rect(fNum(fieldLimit.width, 31.8) + fieldLimit.left, fNum(fieldLimit.height, 57.3) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
+        pygame.Rect(fNum(fieldLimit.width, 33.8) + fieldLimit.left, fNum(fieldLimit.height, 49.5) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
+        pygame.Rect(fNum(fieldLimit.width, 25.6) + fieldLimit.left, fNum(fieldLimit.height, 49.5) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
+        pygame.Rect(fNum(fieldLimit.width, 31.7) + fieldLimit.left, fNum(fieldLimit.height, 41.7) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4)),
+        pygame.Rect(fNum(fieldLimit.width, 27.5) + fieldLimit.left, fNum(fieldLimit.height, 41.7) + fieldLimit.top, fNum(fNum(fNum(w, 15), 87), 4), fNum(fNum(fNum(w, 15), 87), 4))
+    ]  
+        algaeFilled = [True, True, True, True, True, True]
 
         
     if prevscrn != curscrn:
@@ -183,8 +184,12 @@ while run:
             Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 50) + fieldLimit.top, "b"))
             Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 75) + fieldLimit.top, "b"))
             Pieces.append(gamePieces("coral", fNum(fieldLimit.width, 10) + fieldLimit.left, fNum(fieldLimit.height, 25) + fieldLimit.top, "b"))
+
+            for b in range(6):
+                Pieces.append(gamePieces("algae", algaeHitBox[b].centerx, algaeHitBox[b].centery, "b"))
             
-        print("change")
+            
+
         screen = pygame.display.set_mode((w, h))
     else:
         scrnChange = False
@@ -216,28 +221,8 @@ while run:
                         elif butt.text == "C":
                             Pieces.append(gamePieces("coral", fNum(w, 50), fNum(h, 50), "b"))
                         mouseup = False
-                        
-    redPAm = 0
-    bluePAm = 0
-    for piece in Pieces:
-        Pieces[len(Pieces) - (Pieces.index(piece) + 1)].draw(screen)
-        if not follow:
-            if piece.hit.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1, 1))) and pygame.mouse.get_pressed()[0]:
-                followPiece = piece
-                follow = True
-        if piece.hit.colliderect(redPRect):
-            redPAm += 1
-        elif piece.hit.colliderect(bluePRect):
-            bluePAm += 1
 
-        if followPiece != piece:
-            if piece.type == "algae":
-                for i in range(6):
-                    if piece.hit.colliderect(algaeHitBox[i]):
-                        print(algaeHitBox[i].centerx, algaeHitBox[i].centery)
-                        piece.x = algaeHitBox[i].centerx
-                        piece.y = algaeHitBox[i].centery
-
+                    
     
     if follow:
         Pieces.remove(followPiece)
@@ -288,6 +273,39 @@ while run:
                 
                 follow = False
                 followPiece = None
+    
+
+        redPAm = 0
+    bluePAm = 0
+    algaeFilled = [False, False, False, False, False, False]
+    for piece in Pieces:
+        if followPiece != piece:
+            for i in range(6):
+                if piece.hit.colliderect(algaeHitBox[i]):
+                    algaeFilled[i] = True
+
+    print(algaeFilled)
+    
+    for piece in Pieces:
+        Pieces[len(Pieces) - (Pieces.index(piece) + 1)].draw(screen)
+        if not follow:
+            if piece.hit.colliderect(pygame.Rect(pygame.mouse.get_pos(), (1, 1))) and pygame.mouse.get_pressed()[0]:
+                followPiece = piece
+                follow = True
+        if piece.hit.colliderect(redPRect):
+            redPAm += 1
+        elif piece.hit.colliderect(bluePRect):
+            bluePAm += 1
+        
+        if followPiece != piece:
+            if piece.type == "algae":
+                for i in range(6):
+                    
+                    if piece.hit.colliderect(algaeHitBox[i]) and algaeFilled[i] == False:
+                        piece.x = algaeHitBox[i].centerx
+                        piece.y = algaeHitBox[i].centery
+                        piece.hit.topleft = (algaeHitBox[i].centerx, algaeHitBox[i].centery)
+
 
     if openWind:
         openWin(screen)
